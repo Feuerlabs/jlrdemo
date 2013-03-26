@@ -1,0 +1,19 @@
+%% -*- erlang -*-
+{application, exodemo,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+		  exoport
+                 ]},
+  {mod, { exodemo_app, []}},
+  {start_phases, [{can, []},
+		  {waypoints, []},
+		  {ping, []},
+		  {logging, []},
+		  {alarms, []}]},
+  {env, []}
+ ]}.

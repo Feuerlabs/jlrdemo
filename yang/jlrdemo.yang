@@ -1,0 +1,144 @@
+module jlrdemo {
+
+    namespace "http://feuerlabs.com/jlrdemo";
+    prefix demo;
+
+    import exosense {
+        prefix exo;
+    }
+
+    description 
+	"JSON-RPC spec for the Jaguar Land Rover demo remote HVAC control." +
+	"The protocol will be used between the Exosense Server and the web " +
+	"server as well as between the Exosense Device JLR Demo Application " +
+	"(JLR App) and the Webkit running the IVI UI in the vehicle.";
+
+    typedef id-string {
+      description "Common type for string identifiers in exodm";
+      type string {
+	length "1..64";
+      }
+    }
+
+    //
+    // Set the temperature in the vehicle
+    //
+    rpc set-temperature-request {
+        description
+	    "**Set the cabin temperature**\n\n" +
+	    "Webkit -> JLR App.\n\n" +
+	    "Webserver -> Exosense Server.\n\n" +
+	    "This call instructs the JLR App to emit CAN frames to the HVAC " +
+	    "controller that will set the cabin temperature (left and right) to the " +
+	    "given Celsius value. \n\n\n\n";
+
+        input {
+            description
+		"Input consists of standard request elements " +
+                "and a left/right temperature value.";
+
+            uses exo:std-request;
+
+	    leaf left-temperature {
+		description "Left side temperature to set. Celsius";
+		type uint32;
+	    }
+
+	    leaf right-temperature {
+		description "Right side temperature to set. Celsius";
+		type uint32;
+	    }
+	}
+
+        // Output only contains status.
+        output {
+            description
+            "Output sent in response to a set-temperature-request";
+            uses exo:std-callback;
+        }
+    }
+
+    //
+    // Set the HVAC fan speed
+    //
+    rpc set-fan-speed-request {
+        description
+	    "**Set the fan speed**\n\n" +
+	    "Webkit -> JLR App\n\n" +
+	    "Webserver -> Exosense Server\n\n" +
+	    "This call instructs the JLR App to emit CAN frames to the HVAC " +
+	    "controller that will set the fan speed to the given value.\n\n\n\n";
+
+        input {
+            description
+		"Input consists of standard request elements " +
+                "and a fan speed between 0 and 9.";
+
+            uses exo:std-request;
+
+	    leaf fan-speed {
+		description "Fan speed to set. 0 = Off. 9 = Max.";
+		type uint32;
+	    }
+	}
+
+        // Output only contains status.
+        output {
+            description
+            "Output sent in response to a set-fan-speed-request";
+            uses exo:std-callback;
+        }
+    }
+
+    //
+    // Waypoint processor.
+    //
+    rpc process-waypoints {
+        description
+	    "**Process a batch of waypoint**\n\n " +
+	    "Exosense Server -> Webserver\n\n" +
+	    "This call is made to the web server to deliver a number of lat/lon waypoints " +
+	    "gathered from the vehicle's GPS receiver.";
+
+        input {
+            uses exo:std-request;
+
+	    list waypoints {
+                description  "A list of waypoints that the vehicle has passed.";
+                key "ts";
+
+		leaf ts {
+		    description "UTC Time Stamp";
+		    type uint32;
+		}
+
+		leaf lat {
+		    description "Latitude of device location. Six decimal precision";
+		    type decimal64 {
+			fraction-digits 6;
+			range "-90..90";
+		    }
+		}
+
+		leaf lon {
+		    description "Longitude of device location. Six decimal precision";
+		    type decimal64 {
+			fraction-digits 6;
+			range "-180..180";
+		    }
+		}
+            }
+        }
+
+        // Output only contains status.
+        output {
+            description
+		"Output sent in response to a process-waypoints to indicate that the waypoints have been received.";
+            leaf result {
+		type exo:status-code;
+	    }
+        }
+    }
+}
+
+
