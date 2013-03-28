@@ -95,9 +95,9 @@ report_to_logger(Speed, StateOfCharge, KeyPos, State) ->
 	     end,
 
     if NSpeed =/= OSpeed, NSpeed =/= undefined ->
-	    io:format("Sending speed ~p~n", [ NSpeed ]),
-	    jlrdemo_log:log_can(?SPEED_ID, 1, NSpeed),
-	    jlrdemo_alarms:check_alarm(?SPEED_ID, 1, NSpeed);
+	    io:format("Sending speed ~p~n", [ NSpeed ]);
+%%	    jlrdemo_log:log_can(?SPEED_ID, 1, NSpeed),
+%%	    jlrdemo_alarms:check_alarm(?SPEED_ID, 1, NSpeed);
        true ->
 	    true
     end,
@@ -108,9 +108,9 @@ report_to_logger(Speed, StateOfCharge, KeyPos, State) ->
 	     end,
 
     if NKeyPos =/= OKeyPos, NKeyPos =/= undefined ->
-	    io:format("Sending  keypos ~p~n", [ NKeyPos ]),
-	    jlrdemo_log:log_can(?KEYPOS_ID, 1, NKeyPos),
-	    jlrdemo_alarms:check_alarm(?KEYPOS_ID, 1, NKeyPos);
+	    io:format("Sending  keypos ~p~n", [ NKeyPos ]);
+%%	    jlrdemo_log:log_can(?KEYPOS_ID, 1, NKeyPos),
+%%	    jlrdemo_alarms:check_alarm(?KEYPOS_ID, 1, NKeyPos);
        true ->
 	    true
     end,
@@ -121,9 +121,9 @@ report_to_logger(Speed, StateOfCharge, KeyPos, State) ->
 	     end,
 
     if NStateOfCharge =/= OStateOfCharge, NStateOfCharge =/= undefined ->
-	    io:format("Sending  soc ~p~n", [ NStateOfCharge ]),
-	    jlrdemo_log:log_can(?SOC_ID, 1, NStateOfCharge),
-	    jlrdemo_alarms:check_alarm(?SOC_ID, 1, NStateOfCharge);
+	    io:format("Sending  soc ~p~n", [ NStateOfCharge ]);
+%%	    jlrdemo_log:log_can(?SOC_ID, 1, NStateOfCharge),
+%%	    jlrdemo_alarms:check_alarm(?SOC_ID, 1, NStateOfCharge);
        true ->
 	    true
     end,

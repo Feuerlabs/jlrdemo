@@ -1,4 +1,5 @@
-.PHONY:	all deps compile setup clean
+.PHONY:	all deps compile setup clean doc
+
 
 NAME=jlrdemo
 export KVDB_BACKENDS=ets
@@ -25,6 +26,9 @@ target:
 
 run: setup
 	erl -boot setup/start -config setup/sys
+
+doc:
+        REBAR_DOC=1 rebar skip_deps=true get-deps doc
 
 clean:
 	rebar clean

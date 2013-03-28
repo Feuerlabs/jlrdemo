@@ -24,8 +24,9 @@ start_link() ->
 
 init([]) ->
     {ok, { {one_for_one, 5, 10},
-	   [?CHILD(jlrdemo_alarms, worker),
-	    ?CHILD(jlrdemo_log, worker),
+	   [
+%%          ?CHILD(jlrdemo_alarms, worker),
+%%	    ?CHILD(jlrdemo_log, worker),
 	    ?CHILD(jlrdemo_can, worker),
 	    ?CHILD(jlrdemo_waypoints, worker)
 	    %% ?CHILD(jlrdemo_gps, worker),

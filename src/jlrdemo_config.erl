@@ -56,9 +56,9 @@ process_elems(Elems) ->
                     kvdb_conf:in_transaction(
                       fun(_) ->
                               [kvdb_conf:write(Obj) || Obj <- Data]
-                      end),
-                    jlrdemo_log:config_update(),
-                    jlrdemo_alarms:config_update();
+                      end);
+%%                    jlrdemo_log:config_update(),
+%%                    jlrdemo_alarms:config_update();
                true ->
                     ok
             end,

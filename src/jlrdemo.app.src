@@ -1,5 +1,5 @@
 %% -*- erlang -*-
-{application, exodemo,
+{application, jlrdemo,
  [
   {description, ""},
   {vsn, "1"},
@@ -9,11 +9,9 @@
                   stdlib,
 		  exoport
                  ]},
-  {mod, { exodemo_app, []}},
+  {mod, { jlrdemo_app, []}},
   {start_phases, [{can, []},
 		  {waypoints, []},
-		  {ping, []},
-		  {logging, []},
-		  {alarms, []}]},
+		  {ping, []}]},
   {env, []}
  ]}.

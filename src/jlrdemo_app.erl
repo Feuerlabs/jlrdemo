@@ -17,9 +17,6 @@ start(_StartType, _StartArgs) ->
 start_phase(alarms, _, _) ->
     jlrdemo_alarms:read_config(),
     ok;
-start_phase(logging, _, _) ->
-    jlrdemo_log:read_config(),
-    ok;
 start_phase(ping, _, _) ->
     exoport:ping(),
     ok;
