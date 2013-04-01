@@ -62,7 +62,7 @@ send_waypoints(Wpts) ->
     case H of
 	{ position, Lat, Long } ->
 	    exoport:rpc(exodm_rpc, rpc,
-			[<<"demo">>, <<"process-waypoints">>,
+			[<<"jlrdemo">>, <<"process-waypoints">>,
 			 [
 			  {'waypoints',
 			   { array,
@@ -110,7 +110,3 @@ terminate(_Reason, _S) ->
 code_change(_FromVsn, S, _Extra) ->
     {ok, S}.
 
-%% helper functions
-timestamp() ->
-    DT = erlang:universaltime(),
-    calendar:datetime_to_gregorian_seconds(DT).
