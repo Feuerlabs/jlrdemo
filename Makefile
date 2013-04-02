@@ -4,6 +4,8 @@
 NAME=jlrdemo
 export KVDB_BACKENDS=ets
 
+SETUP_GEN=$(shell ./find_setup_gen.sh)
+
 all: deps compile
 
 deps:
@@ -16,12 +18,12 @@ recomp:
 	rebar compile skip_deps=true
 
 setup:
-	ERL_LIBS+=":`pwd`/deps" \
-	deps/setup/setup_gen $(NAME) priv/setup.config setup -pz `pwd`/ebin
+	ERL_LIBS=$(PWD)/deps:$(ERL_LIBS) \
+	$(SETUP_GEN) $(NAME) priv/setup.config setup -pz $(PWD)/ebin
 
 target:
-	ERL_LIBS+=":`pwd`/deps" \
-	deps/setup/setup_gen $(NAME) priv/setup.config setup -pz `pwd`/ebin \
+	ERL_LIBS=$(PWD)/deps:$(ERL_LIBS) \
+	$(SETUP_GEN) $(NAME) priv/setup.config setup -pz $(PWD)/ebin \
 	-target rel -vsn 0.1
 
 run: setup
