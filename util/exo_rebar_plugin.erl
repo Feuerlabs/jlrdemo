@@ -16,7 +16,7 @@ compile_yang(Source, Target, Config) ->
     ok = filelib:ensure_dir(Target),
     TargetDir = filename:dirname(Target),
     SrcBase = filename:basename(Source),
-    Mod = list_to_atom(filename:basename(SrcBase, ".yang")),
+    Mod = list_to_atom("yang_spec_" ++ filename:basename(SrcBase, ".yang")),
     YangOpts = rebar_config:get(Config, yang_opts, []),
     case yang:parse_file(Source) of
 	{ok, Y} ->

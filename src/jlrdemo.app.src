@@ -13,5 +13,7 @@
   {start_phases, [{can, []},
 		  {waypoints, []},
 		  {ping, []}]},
-  {env, []}
+  {env, [
+	 {yang_spec_modules, [{"$PRIV_DIR/yang", "yang_spec_*.beam"}]}
+	]}
  ]}.
