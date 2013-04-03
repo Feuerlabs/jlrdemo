@@ -1,4 +1,7 @@
 # Settings
+
+Setting | value
+
 Protocol: CAN15765
 
 Timing Registers: BTR0 = 47, BTR1 = 14

@@ -3,8 +3,7 @@
 
 -export(['set-fan-speed-request'/1]).
 
--include_lib("lager/include/log.hrl").
-
 'set-fan-speed-request'(Speed) ->
-    ?debug("set-fan-speed-request(~p)~n", [Speed]),
+    io:format("set-fan-speed-request(~p)~n", [Speed]),
+    jlrdemo_can:set_fan_speed_frame(Speed),
     ok.

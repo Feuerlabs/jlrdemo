@@ -14,6 +14,9 @@
 	 terminate/2,
 	 code_change/3]).
 
+
+-export([set_fan_speed_frame/1]).
+
 -record(st, {
 	  iface = undefined,
 	  unknown1 = 0,
@@ -35,6 +38,7 @@
 	 }).
 
 -define(FCIM_FACP_A, 16#240).
+-define(SERVER, jlrdemo_can).
 
 start_can() ->
     io:format("jlrdemo_can:start_can()~n", []),
@@ -160,3 +164,6 @@ terminate(_Reason, _S) ->
 
 code_change(_FromVsn, S, _Extra) ->
     {ok, S}.
+
+set_fan_speed_frame(Speed) ->
+    gen_server:call(?SERVER, { set_fan_speed_frame, Speed }).
