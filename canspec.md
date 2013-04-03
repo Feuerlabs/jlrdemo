@@ -39,6 +39,8 @@ Length (Bit)|2
 
 Values:
 
+Hex | Meaning
+----|------
 0x3 | Recirc Timed
 0x2 | Recirc Auto
 0x1 | Recirc On
