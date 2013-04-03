@@ -15,6 +15,7 @@ DLC: 8
 
 ## Front System On
 
+  |
 --|--
 Symbol| FCIM_FACP_A::FrontSystemOnCmd_MS
 Startbit| 46
