@@ -14,12 +14,14 @@ ID: 0x240
 DLC: 8
 
 ## Front System On
+
 --|--
 Symbol| FCIM_FACP_A::FrontSystemOnCmd_MS
 Startbit| 46
 Length (Bit)| 1
 
 Values:
+
 Hex | Meaning
 ----|------
 0x1 | On
@@ -27,11 +29,13 @@ Hex | Meaning
 
 
 ##  Air Recirculation
+
 Symbol|FCIM_FACP_A::RecircReq_MS
 Startbit| 56
 Length (Bit)|2
 
 Values:
+
 0x3 | Recirc Timed
 0x2 | Recirc Auto
 0x1 | Recirc On
