@@ -41,8 +41,11 @@
 handle_rpc(<<"jlrdemo">>, Method, Args, Meta) ->
     case Method of
 	<<"set-fan-speed-request">> ->
-	    'set-fan-speed-request_'(Args),
-	    exoport:rpc(<<"jlrdemo">>, <<"set-fan-speed-request">>, Args);
+	    Res = 'set-fan-speed-request_'(Args),
+	    exoport:rpc(
+	      exodm_rpc, rpc,
+	      [<<"jlrdemo">>, <<"set-fan-speed-request">>, Args]),
+	    Res;
 	<<"set-temperature-request">> -> 'set-temperature-request_'(Args)
     end.
 
