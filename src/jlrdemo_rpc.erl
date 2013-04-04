@@ -40,7 +40,9 @@
 %% JSON-RPC entry point
 handle_rpc(<<"jlrdemo">>, Method, Args, Meta) ->
     case Method of
-	<<"set-fan-speed-request">> -> 'set-fan-speed-request_'(Args);
+	<<"set-fan-speed-request">> ->
+	    'set-fan-speed-request_'(Args),
+	    exoport:rpc(<<"jlrdemo">>, <<"set-fan-speed-request">>, Args);
 	<<"set-temperature-request">> -> 'set-temperature-request_'(Args)
     end.
 
