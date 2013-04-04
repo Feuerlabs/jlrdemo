@@ -13,7 +13,8 @@
 
 'set-fan-speed-request_'(Args) ->
     case lists:keyfind('fan-speed', 1, Args) of
-	{_, Value, _} ->
+	Found when is_tuple(Found) ->
+	    Value = element(2, Found),
 	    ok = jlrdemo_fan:'set-fan-speed-request'(Value),
 	    ok(?COMPLETE);
 	false ->
@@ -26,11 +27,12 @@
 
 'set-temperature-request_'(Args) ->
     case lists:keyfind('fan-speed', 1, Args) of
-	{_, Value, _} ->
-	    ok = jlrdemo_fan:'set-fan-speed-request'(Value),
-	    ok(?COMPLETE);
 	false ->
-	    ok(?VALUE_ERROR)
+	    ok(?VALUE_ERROR);
+	Found when is_tuple(Found) ->
+	    Value = element(2, Found),
+	    ok = jlrdemo_fan:'set-fan-speed-request'(Value),
+	    ok(?COMPLETE)
     end.
 
 
