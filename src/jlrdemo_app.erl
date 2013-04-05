@@ -21,7 +21,7 @@ start_phase(can, _, _) ->
     jlrdemo_can:start_can(),
     ok;
 start_phase(waypoints, _, _) ->
-    jlrdemo_waypoints:start_waypoints("/dev/ttySAC1"),
+    jlrdemo_waypoints:start_waypoints("/dev/ttyUSB0"),
     ok.
 
 stop(_State) ->

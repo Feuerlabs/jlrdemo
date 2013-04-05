@@ -16,7 +16,7 @@
 export KVDB_BACKENDS=ets
 if [ ! -f $HOME/setup/start.boot ]
 then
-    escript /usr/lib/erlang/lib/setup-*/ebin/setup_gen.beam demo /usr/lib/erlang/lib/exodemo-*/priv/setup.config setup
+    escript /usr/lib/erlang/lib/setup-*/ebin/setup_gen.beam jlrdemo /usr/lib/erlang/lib/jlrdemo-*/priv/setup.config $HOME/setup
 fi
 
 erl -boot $HOME/setup/start -config $HOME/setup/sys

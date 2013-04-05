@@ -1,0 +1,15 @@
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          jlrdemo
+# Required-Start:    
+# Required-Stop:
+# Default-Start:     1 2 3 4 5
+# Default-Stop:
+# Short-Description: JLR demo launch script
+### END INIT INFO
+
+case "$1" in
+  start) /usr/lib/erlang/lib/jlrdemo*/priv/start_demo.sh & echo $! > /tmp/jlrdemo.pid ;;
+  stop) kill $(cat /tmp/jlrdemo.pid); exit 0 ;;
+  *) echo "Usage: $0 {start|stop}" >&2; exit 1 ;;
+esac
