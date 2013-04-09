@@ -18,7 +18,7 @@
 -export([set_fan_speed/1]).
 
 -record(st, {
-	  iface = undefined,
+	  iface = 0,
 	  unknown1 = 0,
 	  air_distribution = 0,
 	  unknown2 = 0,
@@ -51,7 +51,7 @@ start_link() ->
 init(_) ->
     io:format("jlrdemo_can:init()~n"),
     can_router:start(),
-    {ok, #st{}}.
+    {ok, #st {}}.
 
 handle_cast(_, S) ->
     {noreply, S}.
@@ -61,7 +61,7 @@ handle_call({start_can, Interface, Driver}, _From, #st { iface = OldInterface } 
     io:format("jlrdemo_can:handle_call(start_can, ~p, ~p, ~p)~n",
 	      [Interface, Driver, OldInterface]),
     case OldInterface of
-	undefined ->
+	0 ->
 	    true;
 	_ ->
 	    can_sock:stop(OldInterface)
@@ -70,7 +70,53 @@ handle_call({start_can, Interface, Driver}, _From, #st { iface = OldInterface } 
 
     can_sock:start(Interface, Driver, []),
     can_router:attach(),
-    {reply, ok, #st { iface = Interface }};
+
+   <<
+      Unknown1:16,        %% Byte[0:0-7] Byte[1:0-7]
+
+      Unknown2:5,         %% Byte[2:3-7]
+      FLHSDistrCmd:3,     %% Byte[2:0-2] Air Distribution command
+
+      Unknown3:4,         %% Byte[3:0-3]
+      FanBlwrSpeedCmd:4,  %% Byte[3:4-7] Fan Blower speed
+
+      Unknown4:2,         %% Byte[4:6-7]
+      FrontSetLeftCmd:6,  %% Byte[4:0-5] 32-37  Set left temp (C)
+
+      ACCommand:1,        %% Byte[5:7]
+      FrontSystemOnCmd:1, %% Byte[5:6]
+      FrontSetRightCmd:6, %% Byte[5:0-5]  Set right temp (C)
+
+      Unknown5:8,         %% Byte[6:0-7]
+
+      Unknown6:2,         %% Byte[7:6-7]
+      HFSCommand:1,       %% Byte[7:5]    Heated front screen
+      HRWCommand:1,       %% Byte[7:4]    Heated rear window
+      Unknown7:2,         %% Byte[7:2-3]
+      RecircReq:2         %% Byte[7:0-1]  Recirculation
+    >> = <<0,24,192,1,36,228,192,192>>,
+
+    NSt = #st {
+      iface = 0,
+      unknown1 = Unknown1,
+      air_distribution = FLHSDistrCmd,
+      unknown2 = Unknown2,
+      fan_blower_speed = FanBlwrSpeedCmd,
+      unknown3 = Unknown3,
+      left_temp = FrontSetLeftCmd,
+      unknown4 = Unknown4,
+      right_temp = FrontSetRightCmd,
+      system_on = FrontSystemOnCmd,
+      ac_on = ACCommand,
+      unknown5 = Unknown5,
+      recirc = RecircReq,
+      unknown6 = Unknown6,
+      heated_rear_window = HRWCommand,
+      heated_front_screen = HFSCommand,
+      unknown7 = Unknown7
+     },
+    io:format("NST(~p)~n", [ NSt ]),
+    {reply, ok, NSt};
 
 
 handle_call({set_fan_speed, Speed}, _F, St) ->
@@ -99,8 +145,8 @@ handle_call({set_fan_speed, Speed}, _F, St) ->
       len = 8,
       ts = 0
      },
-    io:format("jlrdemo_can:handle_call({set_fan_speed}, ~p) ~p, ~p~n",
-	      [Speed, Frame, CanFrame]),
+    io:format("jlrdemo_can:handle_call({set_fan_speed} ~p) ~p~n",
+	      [Speed, CanFrame]),
 
     can:send(CanFrame),
     { reply, ok, St#st { fan_blower_speed = Speed }};
