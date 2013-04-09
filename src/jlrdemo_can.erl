@@ -116,6 +116,7 @@ handle_call({start_can, Interface, Driver}, _From, #st { iface = OldInterface } 
       unknown7 = Unknown7
      },
     io:format("NST(~p)~n", [ NSt ]),
+    erlang:send_after(2000, self(), refresh_can_frame),
     {reply, ok, NSt};
 
 
@@ -150,6 +151,9 @@ handle_call({set_fan_speed, Speed}, _F, St) ->
 
     can:send(CanFrame),
     { reply, ok, St#st { fan_blower_speed = Speed }};
+
+
+
 
 handle_call(Msg, From, S) ->
     io:format("jlrdemo_can:handle_call(~p, ~p, ~p)~n", [Msg, From, S]),
@@ -228,7 +232,38 @@ handle_info({can_frame, FrameID, DataLen, Data, _A, _B}, St) ->
     end;
 
 
+handle_info(refresh_can_frame, St) ->
+    Frame =
+	<< (St#st.unknown1):16,
+	   (St#st.unknown2):5,
+	   (St#st.air_distribution):3,
+	   (St#st.unknown3):4,
+	   (St#st.fan_blower_speed):4,
+	   (St#st.unknown4):2,
+	   (St#st.left_temp):6,
+	   (St#st.ac_on):1,
+	   (St#st.system_on):1,
+	   (St#st.right_temp):6,
+	   (St#st.unknown5):8,
+	   (St#st.unknown6):2,
+	   (St#st.heated_front_screen):1,
+	   (St#st.heated_rear_window):1,
+	   (St#st.unknown7):2,
+	   (St#st.recirc):2 >>,
 
+    CanFrame = #can_frame {
+      intf = 0,
+      id = ?FCIM_FACP_A,
+      data = Frame,
+      len = 8,
+      ts = 0
+     },
+    io:format("jlrdemo_can:handle_call(refresh, ~p)~n",
+	      [CanFrame]),
+
+    can:send(CanFrame),
+    erlang:send_after(20000, self(), refresh_can_frame),
+    { noreply, St};
 
 handle_info(Msg,  S) ->
     io:format("jlrdemo_can:handle_info(?? ~p, ~p)~n", [Msg, S]),
