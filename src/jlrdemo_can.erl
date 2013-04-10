@@ -16,6 +16,8 @@
 
 
 -export([set_fan_speed/1]).
+-export([set_left_temperature/1]).
+-export([set_right_temperature/1]).
 
 -record(st, {
 	  iface = 0,
@@ -153,6 +155,72 @@ handle_call({set_fan_speed, Speed}, _F, St) ->
     { reply, ok, St#st { fan_blower_speed = Speed }};
 
 
+handle_call({set_left_temperature, Celsius}, _F, St) ->
+    Frame =
+	<< (St#st.unknown1):16,
+	   (St#st.unknown2):5,
+	   (St#st.air_distribution):3,
+	   (St#st.unknown3):4,
+	   (St#st.fan_blower_speed):4,
+	   (St#st.unknown4):2,
+	   (Celsius*2):6,
+	   (St#st.ac_on):1,
+	   (St#st.system_on):1,
+	   (St#st.right_temp):6,
+	   (St#st.unknown5):8,
+	   (St#st.unknown6):2,
+	   (St#st.heated_front_screen):1,
+	   (St#st.heated_rear_window):1,
+	   (St#st.unknown7):2,
+	   (St#st.recirc):2 >>,
+
+    CanFrame = #can_frame {
+      intf = 0,
+      id = ?FCIM_FACP_A,
+      data = Frame,
+      len = 8,
+      ts = 0
+     },
+    io:format("jlrdemo_can:handle_call({set_left_temperature} ~p) ~p~n",
+	      [Celsius, CanFrame]),
+
+    can:send(CanFrame),
+    { reply, ok, St#st { left_temp = Celsius }};
+
+
+handle_call({set_right_temperature, Celsius}, _F, St) ->
+    Frame =
+	<< (St#st.unknown1):16,
+	   (St#st.unknown2):5,
+	   (St#st.air_distribution):3,
+	   (St#st.unknown3):4,
+	   (St#st.fan_blower_speed):4,
+	   (St#st.unknown4):2,
+	   (St#st.right_temp):6,
+	   (St#st.ac_on):1,
+	   (St#st.system_on):1,
+	   (Celsius*2):6,
+	   (St#st.unknown5):8,
+	   (St#st.unknown6):2,
+	   (St#st.heated_front_screen):1,
+	   (St#st.heated_rear_window):1,
+	   (St#st.unknown7):2,
+	   (St#st.recirc):2 >>,
+
+    CanFrame = #can_frame {
+      intf = 0,
+      id = ?FCIM_FACP_A,
+      data = Frame,
+      len = 8,
+      ts = 0
+     },
+    io:format("jlrdemo_can:handle_call({set_right_temperature} ~p) ~p~n",
+	      [Celsius, CanFrame]),
+
+    can:send(CanFrame),
+    { reply, ok, St#st { right_temp = Celsius }};
+
+
 
 
 handle_call(Msg, From, S) ->
@@ -278,6 +346,12 @@ code_change(_FromVsn, S, _Extra) ->
 
 set_fan_speed(Speed) ->
     gen_server:call(?SERVER, { set_fan_speed, Speed }).
+
+set_left_temperature(Celsius) ->
+    gen_server:call(?SERVER, { set_left_temperature, Celsius }).
+
+set_right_temperature(Celsius) ->
+    gen_server:call(?SERVER, { set_right_temperature, Celsius }).
 
 
 

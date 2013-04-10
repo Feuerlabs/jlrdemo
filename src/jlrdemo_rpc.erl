@@ -1,7 +1,9 @@
 -module(jlrdemo_rpc).
 
 -export(['set-fan-speed-request'/1,
-	 'set-temperature-request'/1]).
+	 'set-left-temperature-request'/1,
+	 'set-right-temperature-request'/1]).
+
 -export([handle_rpc/4]).
 
 -define(COMPLETE   , <<"1">>).
@@ -21,30 +23,47 @@
     case lists:keyfind('fan-speed', 1, Args) of
 	Found when is_tuple(Found) ->
 	    Value = element(2, Found),
-	    ok = jlrdemo_fan:'set-fan-speed-request'(Value),
+	    jlrdemo_can:set_fan_speed(Value),
 	    ok(?COMPLETE);
 	false ->
 	    ok(?VALUE_ERROR)
     end.
 
-'set-temperature-request'(Args) ->
-    'set-temperature-request_'(Args),
+'set-left-temperature-request'(Args) ->
+    'set-left-temperature-request_'(Args),
+    send_http_request(<<"jlrdemo">>, <<"set-left-temperature-request">>, Args),
      ok.
 
-'set-temperature-request_'(Args) ->
-    case lists:keyfind('fan-speed', 1, Args) of
+'set-left-temperature-request_'(Args) ->
+    case lists:keyfind('temperature', 1, Args) of
 	false ->
 	    ok(?VALUE_ERROR);
 	Found when is_tuple(Found) ->
 	    Value = element(2, Found),
-	    ok = jlrdemo_fan:'set-fan-speed-request'(Value),
+	    ok = jlrdemo_can:'set-left-temperature-request'(Value),
+	    ok(?COMPLETE)
+    end.
+
+
+'set-right-temperature-request'(Args) ->
+    'set-right-temperature-request_'(Args),
+    send_http_request(<<"jlrdemo">>, <<"set-right-temperature-request">>, Args),
+     ok.
+
+'set-right-temperature-request_'(Args) ->
+    case lists:keyfind('temperature', 1, Args) of
+	false ->
+	    ok(?VALUE_ERROR);
+	Found when is_tuple(Found) ->
+	    Value = element(2, Found),
+	    ok = jlrdemo_can:'set-right-temperature-request'(Value),
 	    ok(?COMPLETE)
     end.
 
 
 
 %% JSON-RPC entry point
-handle_rpc(<<"jlrdemo">>, Method, Args, Meta) ->
+handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
     case Method of
 	<<"set-fan-speed-request">> ->
 	    Res = 'set-fan-speed-request_'(Args),
@@ -52,7 +71,21 @@ handle_rpc(<<"jlrdemo">>, Method, Args, Meta) ->
 	      exodm_rpc, rpc,
 	      [<<"jlrdemo">>, <<"set-fan-speed-request">>, Args]),
 	    Res;
-	<<"set-temperature-request">> -> 'set-temperature-request_'(Args)
+
+	<<"set-left-temperature-request">> ->
+	    Res = 'set-left-temperature-request_'(Args),
+	    exoport:rpc(
+	      exodm_rpc, rpc,
+	      [<<"jlrdemo">>, <<"set-left-temperature-request">>, Args]),
+	    Res;
+
+	<<"set-right-temperature-request">> ->
+	    Res = 'set-right-temperature-request_'(Args),
+	    exoport:rpc(
+	      exodm_rpc, rpc,
+	      [<<"jlrdemo">>, <<"set-right-temperature-request">>, Args]),
+	    Res
+
     end.
 
 
