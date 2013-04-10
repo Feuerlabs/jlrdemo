@@ -15,11 +15,13 @@
 -include_lib("lager/include/log.hrl").
 
 'set-fan-speed-request'(Args) ->
+    io:format("jlrdemo_rpc:set-fan-speed-request(): Args(~p) ~n", [ Args ]),
     'set-fan-speed-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-fan-speed-request">>, Args),
     ok.
 
 'set-fan-speed-request_'(Args) ->
+    io:format("jlrdemo_rpc:set-fan-speed-request_(): Args(~p) ~n", [ Args ]),
     case lists:keyfind('fan-speed', 1, Args) of
 	Found when is_tuple(Found) ->
 	    Value = element(2, Found),
@@ -70,6 +72,7 @@ handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
 	    exoport:rpc(
 	      exodm_rpc, rpc,
 	      [<<"jlrdemo">>, <<"set-fan-speed-request">>, Args]),
+	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
 	    Res;
 
 	<<"set-left-temperature-request">> ->

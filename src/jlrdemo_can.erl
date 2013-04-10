@@ -118,7 +118,7 @@ handle_call({start_can, Interface, Driver}, _From, #st { iface = OldInterface } 
       unknown7 = Unknown7
      },
     io:format("NST(~p)~n", [ NSt ]),
-    erlang:send_after(2000, self(), refresh_can_frame),
+    erlang:send_after(1000, self(), refresh_can_frame),
     {reply, ok, NSt};
 
 
