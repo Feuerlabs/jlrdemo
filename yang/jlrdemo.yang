@@ -7,7 +7,7 @@ module jlrdemo {
         prefix exo;
     }
 
-    description 
+    description
 	"JSON-RPC spec for the Jaguar Land Rover demo remote HVAC control." +
 	"The protocol will be used between the Exosense Server and the web " +
 	"server as well as between the Exosense Device JLR Demo Application " +
@@ -23,9 +23,9 @@ module jlrdemo {
     //
     // Set the temperature in the vehicle
     //
-    rpc set-temperature-request {
+    rpc set-left-temperature-request {
         description
-	    "**Set the cabin temperature**\n\n" +
+	    "**Set the left cabin temperature**\n\n" +
 	    "Webkit -> JLR App.\n\n" +
 	    "Webserver -> Exosense Server.\n\n" +
 	    "This call instructs the JLR App to emit CAN frames to the HVAC " +
@@ -39,21 +39,98 @@ module jlrdemo {
 
             uses exo:std-request;
 
-	    leaf left-temperature {
+	    leaf temperature {
 		description "Left side temperature to set. Celsius";
 		type uint32;
 	    }
+	}
+        // Output only contains status.
+        output {
+            description
+            "Output sent in response to a get-right-temperature-request";
 
-	    leaf right-temperature {
-		description "Right side temperature to set. Celsius";
+	    leaf temperature {
+		description "Left side temperature to set. Celsius";
+		type uint32;
+	    }
+            uses exo:std-callback;
+        }
+    }
+
+    //
+    // Get the right hand temperature in the vehicle
+    //
+    rpc get-left-temperature-request {
+        description
+	    "**Retrieve the left cabin temperature**\n\n" +
+	    "Webkit -> JLR App.\n\n" +
+	    "Webserver -> Exosense Server.\n\n";
+
+        input {
+            uses exo:std-request;
+	}
+
+        output {
+            description
+            "Output sent in response to a set-temperature-request";
+	    leaf temperature {
+		description "Left side temperature to set. Celsius";
+		type uint32;
+	    }
+            uses exo:std-callback;
+        }
+    }
+
+    rpc set-right-temperature-request {
+        description
+	    "**Set the right cabin temperature**\n\n" +
+	    "Webkit -> JLR App.\n\n" +
+	    "Webserver -> Exosense Server.\n\n" +
+	    "This call instructs the JLR App to emit CAN frames to the HVAC " +
+	    "controller that will set the cabin temperature (left and right) to the " +
+	    "given Celsius value. \n\n\n\n";
+
+        input {
+            description
+		"Input consists of standard request elements " +
+                "and a left/right temperature value.";
+
+            uses exo:std-request;
+
+	    leaf temperature {
+		description "Left side temperature to set. Celsius";
 		type uint32;
 	    }
 	}
-
         // Output only contains status.
         output {
             description
             "Output sent in response to a set-temperature-request";
+            uses exo:std-callback;
+        }
+    }
+
+    //
+    // Get the right hand temperature in the vehicle
+     //
+    rpc get-right-temperature-request {
+        description
+	    "**Retrieve the right cabin temperature**\n\n" +
+	    "Webkit -> JLR App.\n\n" +
+	    "Webserver -> Exosense Server.\n\n";
+
+        input {
+            uses exo:std-request;
+
+	}
+
+        output {
+            description
+            "Output sent in response to a get-right-temperature-request";
+	    leaf temperature {
+		description "Right side temperature to set. Celsius";
+		type uint32;
+	    }
             uses exo:std-callback;
         }
     }
@@ -86,6 +163,31 @@ module jlrdemo {
         output {
             description
             "Output sent in response to a set-fan-speed-request";
+            uses exo:std-callback;
+        }
+    }
+
+    //
+    // Get the fan speed in the vehicle
+     //
+    rpc get-fan-speed-request {
+        description
+	    "**Retrieve the fan speed**\n\n" +
+	    "Webkit -> JLR App.\n\n" +
+	    "Webserver -> Exosense Server.\n\n";
+
+        input {
+            uses exo:std-request;
+
+	}
+
+        output {
+            description
+            "Output sent in response to a get-fan-speed-request";
+	    leaf speed {
+		description "Fan speed 0-15";
+		type uint32;
+	    }
             uses exo:std-callback;
         }
     }

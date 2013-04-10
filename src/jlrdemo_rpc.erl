@@ -20,6 +20,11 @@
     send_http_request(<<"jlrdemo">>, <<"set-fan-speed-request">>, Args),
     ok.
 
+'get-fan-speed-request'(Args) ->
+    io:format("jlrdemo_rpc:get-fan-speed-request(): Args(~p) ~n", [ Args ]),
+    ok(?COMPLETE, [{ speed, jlrdemo_can:get_fan_speed() }]).
+
+
 'set-fan-speed-request_'(Args) ->
     io:format("jlrdemo_rpc:set-fan-speed-request_(): Args(~p) ~n", [ Args ]),
     case lists:keyfind('fan-speed', 1, Args) of
@@ -36,13 +41,17 @@
     send_http_request(<<"jlrdemo">>, <<"set-left-temperature-request">>, Args),
      ok.
 
+'get-left-temperature-request'(Args) ->
+    io:format("jlrdemo_rpc:get-left-temperature-request(): Args(~p) ~n", [ Args ]),
+    ok(?COMPLETE, [{ temperature, jlrdemo_can:get_left_temperature() }]).
+
 'set-left-temperature-request_'(Args) ->
     case lists:keyfind('temperature', 1, Args) of
 	false ->
 	    ok(?VALUE_ERROR);
 	Found when is_tuple(Found) ->
 	    Value = element(2, Found),
-	    ok = jlrdemo_can:'set-left-temperature-request'(Value),
+	    ok = jlrdemo_can:set_left_temperature(Value),
 	    ok(?COMPLETE)
     end.
 
@@ -58,10 +67,14 @@
 	    ok(?VALUE_ERROR);
 	Found when is_tuple(Found) ->
 	    Value = element(2, Found),
-	    ok = jlrdemo_can:'set-right-temperature-request'(Value),
+	    ok = jlrdemo_can:set_right_temperature(Value),
 	    ok(?COMPLETE)
     end.
 
+
+'get-right-temperature-request'(Args) ->
+    io:format("jlrdemo_rpc:get-right-temperature-request(): Args(~p) ~n", [ Args ]),
+    ok(?COMPLETE, [{ temperature, jlrdemo_can:get_right_temperature() }]).
 
 
 %% JSON-RPC entry point
@@ -75,6 +88,11 @@ handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
 	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
 	    Res;
 
+	<<"get-fan-speed-request">> ->
+	    Res = 'get-fan-speed-request'(Args),
+	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
+	    Res;
+
 	<<"set-left-temperature-request">> ->
 	    Res = 'set-left-temperature-request_'(Args),
 	    exoport:rpc(
@@ -82,11 +100,21 @@ handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
 	      [<<"jlrdemo">>, <<"set-left-temperature-request">>, Args]),
 	    Res;
 
+	<<"get-left-temperature-request">> ->
+	    Res = 'get-left-temperature-request'(Args),
+	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
+	    Res;
+
 	<<"set-right-temperature-request">> ->
 	    Res = 'set-right-temperature-request_'(Args),
 	    exoport:rpc(
 	      exodm_rpc, rpc,
 	      [<<"jlrdemo">>, <<"set-right-temperature-request">>, Args]),
+	    Res;
+
+	<<"get-right-temperature-request">> ->
+	    Res = 'get-right-temperature-request'(Args),
+	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
 	    Res
 
     end.
@@ -96,6 +124,11 @@ ok(Status) ->
     {ok, [{'rpc-status', Status},
 	  {'final', true}]}.
 
+ok(Status, Extra) ->
+    X = { ok, [{'rpc-status', Status},
+	       {'final', true}] ++ Extra },
+    io:format("ok/2:  ~p~n", [X]),
+    X.
 
 send_http_request(Mod, Method, Args) ->
     YangMod = list_to_existing_atom("yang_spec_" ++ binary_to_list(Mod)),

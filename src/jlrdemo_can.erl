@@ -16,8 +16,13 @@
 
 
 -export([set_fan_speed/1]).
+-export([get_fan_speed/0]).
+
 -export([set_left_temperature/1]).
+-export([get_left_temperature/0]).
+
 -export([set_right_temperature/1]).
+-export([get_right_temperature/0]).
 
 -record(st, {
 	  iface = 0,
@@ -188,6 +193,7 @@ handle_call({set_left_temperature, Celsius}, _F, St) ->
     { reply, ok, St#st { left_temp = Celsius }};
 
 
+
 handle_call({set_right_temperature, Celsius}, _F, St) ->
     Frame =
 	<< (St#st.unknown1):16,
@@ -220,6 +226,15 @@ handle_call({set_right_temperature, Celsius}, _F, St) ->
     can:send(CanFrame),
     { reply, ok, St#st { right_temp = Celsius }};
 
+
+handle_call(get_fan_speed, _F, St) ->
+    { reply, St#st.fan_blower_speed , St};
+
+handle_call(get_left_temperature, _F, St) ->
+    { reply, St#st.left_temp , St};
+
+handle_call(get_right_temperature, _F, St) ->
+    { reply, St#st.right_temp , St};
 
 
 
@@ -347,11 +362,19 @@ code_change(_FromVsn, S, _Extra) ->
 set_fan_speed(Speed) ->
     gen_server:call(?SERVER, { set_fan_speed, Speed }).
 
+get_fan_speed() ->
+    gen_server:call(?SERVER,  get_fan_speed ).
+
 set_left_temperature(Celsius) ->
     gen_server:call(?SERVER, { set_left_temperature, Celsius }).
+
+get_left_temperature() ->
+    gen_server:call(?SERVER,  get_left_temperature ).
 
 set_right_temperature(Celsius) ->
     gen_server:call(?SERVER, { set_right_temperature, Celsius }).
 
+get_right_temperature() ->
+    gen_server:call(?SERVER,  get_right_temperature ).
 
 

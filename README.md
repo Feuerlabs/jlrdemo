@@ -13,3 +13,7 @@ Bring up the interface with
 
     ifconfig can0 up
 
+
+# After install, before starting the demo.
+
+rm -rf /root/setup
