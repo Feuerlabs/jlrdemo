@@ -1,6 +1,7 @@
 -module(jlrdemo_rpc).
 
--export(['set-fan-speed-request'/1,
+-export(['set-airflow-direction-request'/1,
+	 'set-fan-speed-request'/1,
 	 'set-left-temperature-request'/1,
 	 'set-right-temperature-request'/1]).
 
@@ -13,6 +14,29 @@
 
 -include_lib("lhttpc/include/lhttpc.hrl").
 -include_lib("lager/include/log.hrl").
+
+
+'set-airflow-direction-request'(Args) ->
+    io:format("jlrdemo_rpc:set-airflow-direction-request(): Args(~p) ~n", [ Args ]),
+    'set-airflow-direction-request_'(Args),
+    send_http_request(<<"jlrdemo">>, <<"set-airflow-direction-request">>, Args),
+    ok.
+
+'set-airflow-direction-request_'(Args) ->
+    io:format("jlrdemo_rpc:set-airflow-direction-request_(): Args(~p) ~n", [ Args ]),
+    case lists:keyfind('direction', 1, Args) of
+	Found when is_tuple(Found) ->
+	    Value = element(2, Found),
+	    jlrdemo_can:set_airflow_direction(Value),
+	    ok(?COMPLETE);
+	false ->
+	    ok(?VALUE_ERROR)
+    end.
+
+'get-airflow-direction-request'(Args) ->
+    io:format("jlrdemo_rpc:get-airflow-direction-request(): Args(~p) ~n", [ Args ]),
+    ok(?COMPLETE, [{ direction, jlrdemo_can:get_airflow_direction() }]).
+
 
 'set-fan-speed-request'(Args) ->
     io:format("jlrdemo_rpc:set-fan-speed-request(): Args(~p) ~n", [ Args ]),
@@ -80,6 +104,19 @@
 %% JSON-RPC entry point
 handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
     case Method of
+	<<"set-airflow-direction-request">> ->
+	    Res = 'set-airflow-direction-request_'(Args),
+	    exoport:rpc(
+	      exodm_rpc, rpc,
+	      [<<"jlrdemo">>, <<"set-airflow-direction-request">>, Args]),
+	    io:format("jlrdemo_rpc:handle_rpc(set-airflow-direction-request): Res(~p)", [ Res ]),
+	    Res;
+
+	<<"get-airflow-direction-request">> ->
+	    Res = 'get-airflow-direction-request'(Args),
+	    io:format("jlrdemo_rpc:handle_rpc(get-airflow-direction-request): Res(~p)", [ Res ]),
+	    Res;
+
 	<<"set-fan-speed-request">> ->
 	    Res = 'set-fan-speed-request_'(Args),
 	    exoport:rpc(

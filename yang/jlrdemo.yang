@@ -193,6 +193,81 @@ module jlrdemo {
     }
 
     //
+    // Set airflow direction
+    //
+    rpc set-airflow-direction-request {
+        description
+	    "**Set the airflow direction**\n\n" +
+	    "Webkit -> JLR App\n\n" +
+	    "Webserver -> Exosense Server\n\n" +
+	    "This call instructs the JLR App to emit CAN frames to the HVAC " +
+	    "controller that will set the airflow direction to the given value.\n\n\n\n";
+
+        input {
+            description
+		"Input consists of standard request elements " +
+                "and a a direction value of 0-7.";
+
+            uses exo:std-request;
+
+	    leaf direction {
+		description "Direction of airflow.\n\n" +
+		    "7 	Foot / Face Screen\n\n" +
+		    "6 Face / Screen\n\n" +
+		    "5 Foot / Screen\n\n" +
+		    "4 Screen\n\n" +
+		    "3 Foot / Face\n\n" +
+		    "2 Face\n\n" +
+		    "1 Foot\n\n" +
+		    "0 Auton\n\n\n";
+
+		type uint32;
+	    }
+	}
+
+        // Output only contains status.
+        output {
+            description
+            "Output sent in response to a set-fan-speed-request";
+            uses exo:std-callback;
+        }
+    }
+
+    //
+    // Get the current airflow direction
+     //
+    rpc get-airflow-direction-request {
+        description
+	    "**Retrieve the airflow**\n\n" +
+	    "Webkit -> JLR App.\n\n" +
+	    "Webserver -> Exosense Server.\n\n";
+
+        input {
+            uses exo:std-request;
+
+	}
+
+        output {
+            description
+            "Output sent in response to a get-airflow-direction-request";
+	    leaf direction {
+		description "Direction of airflow.\n\n" +
+		    "7 	Foot / Face Screen\n\n" +
+		    "6 Face / Screen\n\n" +
+		    "5 Foot / Screen\n\n" +
+		    "4 Screen\n\n" +
+		    "3 Foot / Face\n\n" +
+		    "2 Face\n\n" +
+		    "1 Foot\n\n" +
+		    "0 Auton\n\n\n";
+
+		type uint32;
+	    }
+            uses exo:std-callback;
+        }
+    }
+
+    //
     // Waypoint processor.
     //
     rpc process-waypoints {

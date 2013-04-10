@@ -15,6 +15,9 @@
 	 code_change/3]).
 
 
+-export([set_airflow_direction/1]).
+-export([get_airflow_direction/0]).
+
 -export([set_fan_speed/1]).
 -export([get_fan_speed/0]).
 
@@ -127,6 +130,38 @@ handle_call({start_can, Interface, Driver}, _From, #st { iface = OldInterface } 
     {reply, ok, NSt};
 
 
+handle_call({set_airflow_direction, Direction}, _F, St) ->
+    Frame =
+	<< (St#st.unknown1):16,
+	   (St#st.unknown2):5,
+	   Direction:3,
+	   (St#st.unknown3):4,
+	   (St#st.fan_blower_speed):4,
+	   (St#st.unknown4):2,
+	   (St#st.left_temp):6,
+	   (St#st.ac_on):1,
+	   (St#st.system_on):1,
+	   (St#st.right_temp):6,
+	   (St#st.unknown5):8,
+	   (St#st.unknown6):2,
+	   (St#st.heated_front_screen):1,
+	   (St#st.heated_rear_window):1,
+	   (St#st.unknown7):2,
+	   (St#st.recirc):2 >>,
+
+    CanFrame = #can_frame {
+      intf = 0,
+      id = ?FCIM_FACP_A,
+      data = Frame,
+      len = 8,
+      ts = 0
+     },
+    io:format("jlrdemo_can:handle_call({set_airflow_direction} ~p) ~p~n",
+	      [Direction, CanFrame]),
+
+    can:send(CanFrame),
+    { reply, ok, St#st { air_distribution = Direction }};
+
 handle_call({set_fan_speed, Speed}, _F, St) ->
     Frame =
 	<< (St#st.unknown1):16,
@@ -226,6 +261,9 @@ handle_call({set_right_temperature, Celsius}, _F, St) ->
     can:send(CanFrame),
     { reply, ok, St#st { right_temp = Celsius }};
 
+
+handle_call(get_airflow_direction, _F, St) ->
+    { reply, St#st.air_distribution , St};
 
 handle_call(get_fan_speed, _F, St) ->
     { reply, St#st.fan_blower_speed , St};
@@ -358,6 +396,12 @@ terminate(_Reason, _S) ->
 
 code_change(_FromVsn, S, _Extra) ->
     {ok, S}.
+
+set_airflow_direction(Direction) ->
+    gen_server:call(?SERVER, { set_airflow_direction, Direction }).
+
+get_airflow_direction() ->
+    gen_server:call(?SERVER,  get_airflow_direction ).
 
 set_fan_speed(Speed) ->
     gen_server:call(?SERVER, { set_fan_speed, Speed }).
