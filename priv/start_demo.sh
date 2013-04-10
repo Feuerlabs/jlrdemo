@@ -19,7 +19,7 @@ then
     escript /usr/lib/erlang/lib/setup-*/ebin/setup_gen.beam jlrdemo /usr/lib/erlang/lib/jlrdemo-*/priv/setup.config $HOME/setup
 fi
 
-erl -boot $HOME/setup/start -config $HOME/setup/sys
+erl -noshell -boot $HOME/setup/start -config $HOME/setup/sys
 
 # This needs to be setup correctl
 # {exodm_host, "vps.ulf.wiger.net"}.
