@@ -1,9 +1,14 @@
 -module(jlrdemo_rpc).
 
+
 -export(['set-airflow-direction-request'/1,
+	 'get-airflow-direction-request'/1,
 	 'set-fan-speed-request'/1,
+	 'get-fan-speed-request'/1,
 	 'set-left-temperature-request'/1,
-	 'set-right-temperature-request'/1]).
+	 'get-left-temperature-request'/1,
+	 'set-right-temperature-request'/1,
+	 'get-right-temperature-request'/1]).
 
 -export([handle_rpc/4]).
 
@@ -44,10 +49,14 @@
     send_http_request(<<"jlrdemo">>, <<"set-fan-speed-request">>, Args),
     ok.
 
+
 'get-fan-speed-request'(Args) ->
     io:format("jlrdemo_rpc:get-fan-speed-request(): Args(~p) ~n", [ Args ]),
-    ok(?COMPLETE, [{ speed, jlrdemo_can:get_fan_speed() }]).
-
+    Speed = jlrdemo_can:get_fan_speed(),
+    exoport:rpc(
+      exodm_rpc, rpc,
+      [<<"jlrdemo">>, <<"set-fan-speed-request">>, [{speed, Speed}]]),
+    ok(?COMPLETE, [{ speed, Speed }]).
 
 'set-fan-speed-request_'(Args) ->
     io:format("jlrdemo_rpc:set-fan-speed-request_(): Args(~p) ~n", [ Args ]),
@@ -102,6 +111,7 @@
 
 
 %% JSON-RPC entry point
+%% CAlled by local exo http server
 handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
     case Method of
 	<<"set-airflow-direction-request">> ->
@@ -122,13 +132,12 @@ handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
 	    exoport:rpc(
 	      exodm_rpc, rpc,
 	      [<<"jlrdemo">>, <<"set-fan-speed-request">>, Args]),
-	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
+	    io:format("jlrdemo_rpc:handle_rpc(set-fan-speed-request): Res(~p)~n", [ Res ]),
 	    Res;
 
 	<<"get-fan-speed-request">> ->
-	    Res = 'get-fan-speed-request'(Args),
-	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
-	    Res;
+	    io:format("jlrdemo_rpc:handle_rpc(get-fan-speed-request)~n", [ ]),
+	    ok(?COMPLETE, [{ speed, jlrdemo_can:get_fan_speed() }]);
 
 	<<"set-left-temperature-request">> ->
 	    Res = 'set-left-temperature-request_'(Args),

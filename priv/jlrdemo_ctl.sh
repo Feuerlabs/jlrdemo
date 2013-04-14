@@ -17,7 +17,7 @@ case "$1" in
         fi
 	ifconfig can0 up
 	# Start the demo.
-	sh /usr/lib/erlang/lib/jlrdemo*/priv/start_demo.sh > /tmp/jlrdemo.log 2>&1 &
+	nohup sh /usr/lib/erlang/lib/jlrdemo*/priv/start_demo.sh > /tmp/jlrdemo.log 2>&1 &
 	echo $! > /tmp/jlrdemo.pid ;;
   stop) kill $(cat /tmp/jlrdemo.pid); exit 0 ;;
   *) echo "Usage: $0 {start|stop}" >&2; exit 1 ;;
