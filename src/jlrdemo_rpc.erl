@@ -20,12 +20,16 @@
 -include_lib("lhttpc/include/lhttpc.hrl").
 -include_lib("lager/include/log.hrl").
 
+to_string(Int) ->
+    lists:flatten(io_lib:format("~p", [ Int ])).
 
 'set-airflow-direction-request'(Args) ->
     io:format("jlrdemo_rpc:set-airflow-direction-request(): Args(~p) ~n", [ Args ]),
     'set-airflow-direction-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-airflow-direction-request">>, Args),
-    ok.
+    notify("jlrdemo:get-airflow-direction-notification", ?COMPLETE,
+	   [ {'direction',  jlrdemo_can:get_airflow_direction() } ]).
+
 
 'set-airflow-direction-request_'(Args) ->
     io:format("jlrdemo_rpc:set-airflow-direction-request_(): Args(~p) ~n", [ Args ]),
@@ -49,7 +53,8 @@
     io:format("jlrdemo_rpc:set-fan-speed-request(): Args(~p) ~n", [ Args ]),
     'set-fan-speed-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-fan-speed-request">>, Args),
-    ok.
+    notify( "jlrdemo:get-fan-speed-notification", ?COMPLETE, [ {'fan-speed',  jlrdemo_can:get_fan_speed() } ]).
+
 
 
 'get-fan-speed-request'(Args) ->
@@ -72,7 +77,7 @@
 'set-left-temperature-request'(Args) ->
     'set-left-temperature-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-left-temperature-request">>, Args),
-     ok.
+    notify("jlrdemo:get-left-temperature-notification", ?COMPLETE, [ {'temperature', jlrdemo_can:get_left_temperature() } ]).
 
 'get-left-temperature-request'(Args) ->
     Temp = jlrdemo_can:get_left_temperature(),
@@ -95,7 +100,7 @@
 'set-right-temperature-request'(Args) ->
     'set-right-temperature-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-right-temperature-request">>, Args),
-     ok.
+    notify("jlrdemo:get-right-temperature-notification", ?COMPLETE, [ {'temperature', jlrdemo_can:get_right_temperature() } ]).
 
 'set-right-temperature-request_'(Args) ->
     case lists:keyfind('temperature', 1, Args) of
