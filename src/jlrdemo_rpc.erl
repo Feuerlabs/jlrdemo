@@ -41,7 +41,7 @@
 'get-airflow-direction-request'(Args) ->
     Direction = jlrdemo_can:get_airflow_direction(),
     io:format("jlrdemo_rpc:get-airflow-direction-request(): Args(~p) ~p ~n", [ Args, Direction ]),
-    notify("jlrdemo:get-airflow-direction-notifucation", ?COMPLETE,
+    notify("jlrdemo:get-airflow-direction-notification", ?COMPLETE,
 	   [ {'direction', Direction } ]).
 
 

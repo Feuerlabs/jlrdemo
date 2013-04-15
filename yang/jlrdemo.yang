@@ -85,7 +85,7 @@ module jlrdemo {
 	description
 	    "Notificaiton sent back in response to get-left-temperature-notification.";
 
-	leaf tempoerature {
+	leaf temperature {
 	    description "Temperature celsius";
 	    type uint32;
 	}
@@ -151,7 +151,7 @@ module jlrdemo {
 	description
 	    "Notificaiton sent back in response to get-right-temperature-notification.";
 
-	leaf tempoerature {
+	leaf temperature {
 	    description "Temperature celsius";
 	    type uint32;
 	}
