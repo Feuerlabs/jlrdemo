@@ -39,8 +39,10 @@
     end.
 
 'get-airflow-direction-request'(Args) ->
-    io:format("jlrdemo_rpc:get-airflow-direction-request(): Args(~p) ~n", [ Args ]),
-    ok(?COMPLETE, [{ direction, jlrdemo_can:get_airflow_direction() }]).
+    Direction = jlrdemo_can:get_airflow_direction(),
+    io:format("jlrdemo_rpc:get-airflow-direction-request(): Args(~p) ~p ~n", [ Args, Direction ]),
+    notify("jlrdemo:get-airflow-direction-notifucation", ?COMPLETE,
+	   [ {'direction', Direction } ]).
 
 
 'set-fan-speed-request'(Args) ->
@@ -53,10 +55,8 @@
 'get-fan-speed-request'(Args) ->
     io:format("jlrdemo_rpc:get-fan-speed-request(): Args(~p) ~n", [ Args ]),
     Speed = jlrdemo_can:get_fan_speed(),
-    exoport:rpc(
-      exodm_rpc, rpc,
-      [<<"jlrdemo">>, <<"set-fan-speed-request">>, [{speed, Speed}]]),
-    ok(?COMPLETE, [{ speed, Speed }]).
+%%    spawn(fun() -> exoport:rpc(exodm_rpc, rpc, [<<"jlrdemo">>, <<"set-fan-speed-request">>, [{'fan-speed', Speed}]]) end),
+    notify( "jlrdemo:get-fan-speed-notification", ?COMPLETE, [ {'fan-speed', Speed } ]).
 
 'set-fan-speed-request_'(Args) ->
     io:format("jlrdemo_rpc:set-fan-speed-request_(): Args(~p) ~n", [ Args ]),
@@ -75,8 +75,11 @@
      ok.
 
 'get-left-temperature-request'(Args) ->
-    io:format("jlrdemo_rpc:get-left-temperature-request(): Args(~p) ~n", [ Args ]),
-    ok(?COMPLETE, [{ temperature, jlrdemo_can:get_left_temperature() }]).
+    Temp = jlrdemo_can:get_left_temperature(),
+    io:format("jlrdemo_rpc:get-left-temperature-request(): Args(~p) ~p~n", [ Args, Temp ]),
+%%    spawn(fun() -> exoport:rpc(exodm_rpc, rpc, [<<"jlrdemo">>, <<"set-left-temperature-request">>,
+%%						[{temperature, Temp}]]) end),
+    notify("jlrdemo:get-left-temperature-notification", ?COMPLETE, [ {'temperature', Temp } ]).
 
 'set-left-temperature-request_'(Args) ->
     case lists:keyfind('temperature', 1, Args) of
@@ -106,8 +109,10 @@
 
 
 'get-right-temperature-request'(Args) ->
-    io:format("jlrdemo_rpc:get-right-temperature-request(): Args(~p) ~n", [ Args ]),
-    ok(?COMPLETE, [{ temperature, jlrdemo_can:get_right_temperature() }]).
+    Temp = jlrdemo_can:get_right_temperature(),
+    io:format("jlrdemo_rpc:get-right-temperature-request(): Args(~p) ~p~n", [ Args, Temp ]),
+    notify( "jlrdemo:get-right-temperature-notification", ?COMPLETE, [ {'temperature', Temp } ]).
+
 
 
 %% JSON-RPC entry point
@@ -140,6 +145,7 @@ handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
 	    ok(?COMPLETE, [{ speed, jlrdemo_can:get_fan_speed() }]);
 
 	<<"set-left-temperature-request">> ->
+	    io:format("jlrdemo_rpc:handle_rpc(set-left-temperature-request)~n", []),
 	    Res = 'set-left-temperature-request_'(Args),
 	    exoport:rpc(
 	      exodm_rpc, rpc,
@@ -148,10 +154,11 @@ handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
 
 	<<"get-left-temperature-request">> ->
 	    Res = 'get-left-temperature-request'(Args),
-	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
+	    io:format("jlrdemo_rpc:handle_rpc(get-left-temperature-request): Res(~p)", [ Res ]),
 	    Res;
 
 	<<"set-right-temperature-request">> ->
+	    io:format("jlrdemo_rpc:handle_rpc(set-right-temperature-request)~n", []),
 	    Res = 'set-right-temperature-request_'(Args),
 	    exoport:rpc(
 	      exodm_rpc, rpc,
@@ -160,7 +167,7 @@ handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
 
 	<<"get-right-temperature-request">> ->
 	    Res = 'get-right-temperature-request'(Args),
-	    io:format("jlrdemo_rpc:handle_rpc(): Res(~p)", [ Res ]),
+	    io:format("jlrdemo_rpc:handle_rpc(get-right-temperature-request): Res(~p)", [ Res ]),
 	    Res
 
     end.
@@ -175,6 +182,15 @@ ok(Status, Extra) ->
 	       {'final', true}] ++ Extra },
     io:format("ok/2:  ~p~n", [X]),
     X.
+
+notify(RPC, Status, Extra) ->
+     { notify,
+       RPC,
+       [{'rpc-status', Status},
+	{'final', true}] ++ Extra }.
+
+notify(Callback, Status) ->
+    notify(Callback, Status, []).
 
 send_http_request(Mod, Method, Args) ->
     YangMod = list_to_existing_atom("yang_spec_" ++ binary_to_list(Mod)),

@@ -81,6 +81,17 @@ module jlrdemo {
         }
     }
 
+    notification get-left-temperature-notification {
+	description
+	    "Notificaiton sent back in response to get-left-temperature-notification.";
+
+	leaf tempoerature {
+	    description "Temperature celsius";
+	    type uint32;
+	}
+	uses exo:std-callback;
+    }
+
     rpc set-right-temperature-request {
         description
 	    "**Set the right cabin temperature**\n\n" +
@@ -110,6 +121,7 @@ module jlrdemo {
         }
     }
 
+
     //
     // Get the right hand temperature in the vehicle
      //
@@ -133,6 +145,17 @@ module jlrdemo {
 	    }
             uses exo:std-callback;
         }
+    }
+
+    notification get-right-temperature-notification {
+	description
+	    "Notificaiton sent back in response to get-right-temperature-notification.";
+
+	leaf tempoerature {
+	    description "Temperature celsius";
+	    type uint32;
+	}
+	uses exo:std-callback;
     }
 
     //
@@ -184,12 +207,23 @@ module jlrdemo {
         output {
             description
             "Output sent in response to a get-fan-speed-request";
-	    leaf speed {
+	    leaf fan-speed {
 		description "Fan speed 0-15";
 		type uint32;
 	    }
             uses exo:std-callback;
         }
+    }
+
+    notification get-fan-speed-notification {
+	description
+	    "Notificaiton sent back in response to get-fan-speed-request.";
+
+	leaf fan-speed {
+	    description "Fan speed 0-15";
+	    type uint32;
+	}
+	uses exo:std-callback;
     }
 
     //
@@ -252,10 +286,10 @@ module jlrdemo {
             "Output sent in response to a get-airflow-direction-request";
 	    leaf direction {
 		description "Direction of airflow.\n\n" +
-		    "7 	Foot / Face Screen\n\n" +
+		    "7 Foot / Face Screen\n\n" +
 		    "6 Face / Screen\n\n" +
 		    "5 Foot / Screen\n\n" +
-		    "4 Screen\n\n" +
+
 		    "3 Foot / Face\n\n" +
 		    "2 Face\n\n" +
 		    "1 Foot\n\n" +
@@ -265,6 +299,27 @@ module jlrdemo {
 	    }
             uses exo:std-callback;
         }
+    }
+
+    notification get-airflow-direction-notification {
+	description
+	    "Notificaiton sent back in response to get-airflow-direction-notification.";
+
+	leaf direction {
+	    description "Direction of airflow.\n\n" +
+		"7 Foot / Face Screen\n\n" +
+		"6 Face / Screen\n\n" +
+		"5 Foot / Screen\n\n" +
+
+		"3 Foot / Face\n\n" +
+		"2 Face\n\n" +
+		"1 Foot\n\n" +
+		"0 Auton\n\n\n";
+
+	    type uint32;
+	}
+
+	uses exo:std-callback;
     }
 
     //
