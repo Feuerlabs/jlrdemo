@@ -27,8 +27,9 @@ to_string(Int) ->
     io:format("jlrdemo_rpc:set-airflow-direction-request(): Args(~p) ~n", [ Args ]),
     'set-airflow-direction-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-airflow-direction-request">>, Args),
-    notify("jlrdemo:get-airflow-direction-notification", ?COMPLETE,
-	   [ {'direction',  jlrdemo_can:get_airflow_direction() } ]).
+    ok(?COMPLETE).
+%%    notify("jlrdemo:get-airflow-direction-notification", ?COMPLETE,
+%%	   [ {'direction',  jlrdemo_can:get_airflow_direction() } ]).
 
 
 'set-airflow-direction-request_'(Args) ->
@@ -53,7 +54,8 @@ to_string(Int) ->
     io:format("jlrdemo_rpc:set-fan-speed-request(): Args(~p) ~n", [ Args ]),
     'set-fan-speed-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-fan-speed-request">>, Args),
-    notify( "jlrdemo:get-fan-speed-notification", ?COMPLETE, [ {'fan-speed',  jlrdemo_can:get_fan_speed() } ]).
+    ok(?COMPLETE).
+%%    notify( "jlrdemo:get-fan-speed-notification", ?COMPLETE, [ {'fan-speed',  jlrdemo_can:get_fan_speed() } ]).
 
 
 
@@ -77,7 +79,9 @@ to_string(Int) ->
 'set-left-temperature-request'(Args) ->
     'set-left-temperature-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-left-temperature-request">>, Args),
-    notify("jlrdemo:get-left-temperature-notification", ?COMPLETE, [ {'temperature', jlrdemo_can:get_left_temperature() } ]).
+%%    notify("jlrdemo:get-left-temperature-notification", ?COMPLETE, [ {'temperature', jlrdemo_can:get_left_temperature() } ]).
+    ok(?COMPLETE).
+
 
 'get-left-temperature-request'(Args) ->
     Temp = jlrdemo_can:get_left_temperature(),
@@ -100,7 +104,8 @@ to_string(Int) ->
 'set-right-temperature-request'(Args) ->
     'set-right-temperature-request_'(Args),
     send_http_request(<<"jlrdemo">>, <<"set-right-temperature-request">>, Args),
-    notify("jlrdemo:get-right-temperature-notification", ?COMPLETE, [ {'temperature', jlrdemo_can:get_right_temperature() } ]).
+    ok(?COMPLETE).
+%%    notify("jlrdemo:get-right-temperature-notification", ?COMPLETE, [ {'temperature', jlrdemo_can:get_right_temperature() } ]).
 
 'set-right-temperature-request_'(Args) ->
     case lists:keyfind('temperature', 1, Args) of
