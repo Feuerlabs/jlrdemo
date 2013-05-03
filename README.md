@@ -6,30 +6,30 @@ Follow the instructions under:
 
     `https://github.com/Feuerlabs/exosense_specs/blob/master/doc/exosense_demo_tutorial.pdf`
 
-Replace meta-exodemo with meta-jlrdemo (the Yocto build layerfor
-this demo).
+Replace meta-exodemo with meta-jlrdemo (the Yocto build layerfor this
+demo). The meta-sbc6845 layer, mentioned in the tutorial, will not be
+needed.
 
+## Setting up configuration files
+After setting up the basic environment, as described in the tutorial,
+init the build environment with this command:
+
+    `. oe-init-build-env ../build`
+
+Copy `meta-jlrdemo/build_conf/*.conf` into the `conf` subdirectory of
+the build directory you are currently in.
+
+	cp ../meta-jlrdemo/build_conf/*.conf conf
+
+## Build the RPM 
 Since the demo is installed on Tizen, we will not create a complete
 image, but rather a set of RPMs that can be installed on the standard
-demo.  
+demo.
 
-After the build directory has been generated, as outlined in the
-meta-exosense instructions, edit the following entries in
-conf/local.conf
+Build the RPMs with:
 
-    MACHINE ?= "qemux86"
-    PACKAGE_CLASSES ?= "package_rpm"
-    EXTRA_IMAGE_FEATURES = "debug-tweaks exosense"
-    IMAGE_INSTALL_append = " erlang-jlrdemo"
-
-
-The meta-jlrdemo/build_conf directory contains valid config files that can be installed in the created build/conf directory. Make sure to edit the directories
-in bblayers.conf to reflect the local structure before building.
-
-In the build directory, do:
-
-    bitbake erlang-jlrdemo
 	
+    bitbake erlang-jlrdemo
 
 The rpms will be deposited in 
 
