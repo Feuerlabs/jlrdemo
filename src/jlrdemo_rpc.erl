@@ -152,7 +152,7 @@ handle_rpc(<<"jlrdemo">>, Method, Args, _Meta) ->
 
 	<<"get-fan-speed-request">> ->
 	    io:format("jlrdemo_rpc:handle_rpc(get-fan-speed-request)~n", [ ]),
-	    ok(?COMPLETE, [{ speed, jlrdemo_can:get_fan_speed() }]);
+	    ok(?COMPLETE, [{ 'fan-speed', jlrdemo_can:get_fan_speed() }]);
 
 	<<"set-left-temperature-request">> ->
 	    io:format("jlrdemo_rpc:handle_rpc(set-left-temperature-request)~n", []),

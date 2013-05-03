@@ -19,7 +19,6 @@ curl -u $USER_AUTH -k -X POST  $URL -d @- << EOF
     {
       "device-id": "$1",
       "fan-speed": $2
-
     }
 }
 EOF
