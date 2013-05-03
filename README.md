@@ -1,4 +1,4 @@
-# Jaguar Land Rover HVAC demo app running on Exosense Device Stack.
+# Exosense Device - Jaguar Land Rover Tizen IVI HVAC control demo
 
 # Building the Exosense JLR demo.
 
@@ -21,6 +21,10 @@ conf/local.conf
     PACKAGE_CLASSES ?= "package_rpm"
     EXTRA_IMAGE_FEATURES = "debug-tweaks exosense"
     IMAGE_INSTALL_append = " erlang-jlrdemo"
+
+
+The meta-jlrdemo/build_conf directory contains valid config files that can be installed in the created build/conf directory. Make sure to edit the directories
+in bblayers.conf to reflect the local structure before building.
 
 In the build directory, do:
 
