@@ -2,14 +2,20 @@
 
 # Building the Exosense JLR demo.
 
-Follow the instructions under [[https://github.com/Feuerlabs/meta-exosense/README.md]], but replace meta-exodemo with meta-jlrdemo (the Yocto build for this demo).
+Follow the instructions under:
+
+    `https://github.com/Feuerlabs/exosense_specs/blob/master/doc/exosense_demo_tutorial.pdf`
+
+Replace meta-exodemo with meta-jlrdemo (the Yocto build layerfor
+this demo).
 
 Since the demo is installed on Tizen, we will not create a complete
 image, but rather a set of RPMs that can be installed on the standard
 demo.  
 
-After the build directory has been generated, as outlined in the meta-exosense instructions, edit the following
-entries in conf/local.conf
+After the build directory has been generated, as outlined in the
+meta-exosense instructions, edit the following entries in
+conf/local.conf
 
     MACHINE ?= "qemux86"
     PACKAGE_CLASSES ?= "package_rpm"
